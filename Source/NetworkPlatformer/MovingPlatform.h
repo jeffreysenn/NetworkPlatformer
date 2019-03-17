@@ -19,7 +19,13 @@ public:
 
 protected:
 	UPROPERTY(EditAnywhere, Category = "Movement")
-	float Speed = 10;
+	float Speed = 20;
+
+	UPROPERTY(EditAnywhere, Category = "Movement", Meta = (MakeEditWidget = true))
+	FVector TargetLocation;
+
+	FVector StartWorldLocation;
+	FVector TargetWorldLocation;
 
 public:
 	virtual void BeginPlay() override;
@@ -27,5 +33,5 @@ public:
 	virtual void Tick(float DeltaSeconds) override;
 
 protected:
-	void MoveForwardAtSpeed(float Speed, float DeltaSeconds);
+
 };

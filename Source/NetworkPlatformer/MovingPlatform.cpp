@@ -12,12 +12,15 @@ void AMovingPlatform::BeginPlay()
 {
 	Super::BeginPlay();
 
+
 	if (HasAuthority())
 	{
 		SetReplicates(true);
 		SetReplicateMovement(true);
-
 	}
+
+	StartWorldLocation = GetActorLocation();
+	TargetWorldLocation = GetTransform().TransformPosition(TargetLocation);
 }
 
 void AMovingPlatform::Tick(float DeltaSeconds)
@@ -25,12 +28,16 @@ void AMovingPlatform::Tick(float DeltaSeconds)
 	Super::Tick(DeltaSeconds);
 	if (HasAuthority())
 	{
-		MoveForwardAtSpeed(Speed, DeltaSeconds);
+		FVector Direction = (TargetWorldLocation - StartWorldLocation).GetSafeNormal();
+		FVector SelfToTarget = TargetWorldLocation - GetActorLocation();
+		if (FVector::DotProduct(SelfToTarget, Direction) > 0)
+		{
+			AddActorWorldOffset(Direction*Speed*DeltaSeconds);
+		}
+		else
+		{
+			Swap(StartWorldLocation, TargetWorldLocation);
+		}
 
 	}
-}
-
-void AMovingPlatform::MoveForwardAtSpeed(float Speed, float DeltaSeconds)
-{
-	AddActorWorldOffset(GetActorForwardVector()*Speed*DeltaSeconds);
 }
